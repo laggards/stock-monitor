@@ -1,6 +1,7 @@
 <?php
 
 use \LeanCloud\Engine\Cloud;
+use \LeanCloud\Query;
 
 /*
  * Define cloud functions and hooks on LeanCloud
