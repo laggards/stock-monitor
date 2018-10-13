@@ -7,9 +7,6 @@
         "guzzlehttp/guzzle": "^6.3"
     },
     "autoload": {
-        "files": ["app/helper.php"],
-        "classmap" : [
-            "app/controllers"
-        ]
+        "files": ["app/helper.php"]
     }
 }
