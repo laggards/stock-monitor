@@ -48,10 +48,6 @@ $container['HomeController'] = function($c) {
 $app->get('/test', \HomeController::class . ':home');
 
 $app->get('/', function (Request $request, Response $response) {
-    $query = new Query("Portfolios");
-    $query->equalTo("symbol", "ZH024949");
-    var_dump($query->count());
-    return false;
     return $this->view->render($response, "index.phtml", array(
         "currentTime" => new \DateTime(),
     ));
@@ -75,12 +71,18 @@ $app->get('/portfolios', function(Request $request, Response $response) {
 });
 
 $app->post("/portfolios", function(Request $request, Response $response) {
-    $data = $request->getParsedBody();
-    $portfolio = new LeanObject("Portfolios");
-    $portfolio->set("symbol", $data["symbol"]);
-    $portfolio->set("status", true);
-    $portfolio->save();
-    return $response->withStatus(302)->withHeader("Location", "/portfolios");
+    try {
+        $data = $request->getParsedBody();
+        $portfolio = new LeanObject("Portfolios");
+        $portfolio->set("symbol", $data["symbol"]);
+        $portfolio->set("status", true);
+        $portfolio->save();
+        return $response->withStatus(302)->withHeader("Location", "/portfolios");
+    } catch (\Exception $ex) {
+        error_log("Query portfolio failed!");
+        $portfolios = array();
+    }
+
 });
 
 // 显示 todo 列表
