@@ -48,9 +48,10 @@ $container['HomeController'] = function($c) {
 $app->get('/test', \HomeController::class . ':home');
 
 $app->get('/', function (Request $request, Response $response) {
-    /*
-    
-    */
+    $query = new Query("Portfolios");
+    $query->equalTo("symbol", "ZH024949");
+    var_dump($query->count());
+    return false;
     return $this->view->render($response, "index.phtml", array(
         "currentTime" => new \DateTime(),
     ));

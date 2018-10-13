@@ -47,7 +47,7 @@ Cloud::define("sieveOfPrimes", function($params, $user) {
 
 Cloud::beforeSave("Portfolios", function($portfolio, $currentUser) {
     $query = new Query("Portfolios");
-    $query->equalTo("symbol", $portfolio->symbol);
+    $query->equalTo("symbol", $portfolio->get('symbol'));
     if ($query->count() == 0) {
         $portfolio->set('name', 'test123');
     } else {
