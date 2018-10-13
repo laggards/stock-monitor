@@ -79,8 +79,7 @@ $app->post("/portfolios", function(Request $request, Response $response) {
         $portfolio->save();
         return $response->withStatus(302)->withHeader("Location", "/portfolios");
     } catch (\Exception $ex) {
-        error_log("Query portfolio failed!");
-        $portfolios = array();
+        return $response->withStatus(302)->withHeader("Location", "/portfolios");
     }
 
 });
