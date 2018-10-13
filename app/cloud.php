@@ -52,7 +52,7 @@ Cloud::beforeSave("Portfolios", function($portfolio, $currentUser) {
         $portfolio->set('name', 'test123');
     } else {
         // 返回错误，并取消数据保存
-        throw new FunctionError("No Comment!", 101);
+        throw new Exception("该标识已存在！");
     }
     // 如果正常返回，则数据会保存
 });
