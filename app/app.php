@@ -1,6 +1,6 @@
 <?php
 require __DIR__ . '/../vendor/autoload.php';
-require __DIR__ . '/../src/cloud.php';
+require __DIR__ . '/../app/cloud.php';
 
 /*
  * A simple Slim based sample application
@@ -40,10 +40,46 @@ $container["view"] = function($container) {
     return new \Slim\Views\PhpRenderer(__DIR__ . "/views/");
 };
 
+$container['HomeController'] = function($c) {
+    $view = $c->get("view"); // retrieve the 'view' from the container
+    return new HomeController($view);
+};
+
+$app->get('/test', \HomeController::class . ':home');
+
 $app->get('/', function (Request $request, Response $response) {
+    /*
+    
+    */
     return $this->view->render($response, "index.phtml", array(
         "currentTime" => new \DateTime(),
     ));
+});
+
+
+// 显示 组合 列表
+$app->get('/portfolios', function(Request $request, Response $response) {
+    $query = new Query("Portfolios");
+    $query->descend("createdAt");
+    try {
+        $portfolios = $query->find();
+    } catch (\Exception $ex) {
+        error_log("Query portfolio failed!");
+        $portfolios = array();
+    }
+    return $this->view->render($response, "portfolios.phtml", array(
+        "title" => "组合列表",
+        "portfolios" => $portfolios,
+    ));
+});
+
+$app->post("/portfolios", function(Request $request, Response $response) {
+    $data = $request->getParsedBody();
+    $portfolio = new LeanObject("Portfolios");
+    $portfolio->set("symbol", $data["symbol"]);
+    $portfolio->set("status", true);
+    $portfolio->save();
+    return $response->withStatus(302)->withHeader("Location", "/portfolios");
 });
 
 // 显示 todo 列表
@@ -76,5 +112,6 @@ $app->get('/hello/{name}', function (Request $request, Response $response) {
 
     return $response;
 });
+
 
 $app->run();

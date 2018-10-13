@@ -11,6 +11,10 @@ Cloud::define("sayHello", function($params, $user) {
     return "hello {$params['name']}";
 });
 
+Cloud::define("logTimer", function($params, $user) {
+    error_log("Log in timer");
+});
+
 // /1.1/functions/sieveOfPrimes
 Cloud::define("sieveOfPrimes", function($params, $user) {
     $n = isset($params["n"]) ? $params["n"] : 1000;
@@ -40,6 +44,30 @@ Cloud::define("sieveOfPrimes", function($params, $user) {
     return $numbers;
 });
 
+Cloud::beforeSave("Portfolios", function($portfolio, $currentUser) {
+    $query = new Query("Portfolios");
+    var_dump($portfolio);
+    exit();
+    $query->equalTo("symbol", $portfolio->symbol);
+    if ($query->count() == 0) {
+        $portfolio->set('name', 'test123');
+    } else {
+        // 返回错误，并取消数据保存
+        throw new FunctionError("No Comment!", 101);
+    }
+    // 如果正常返回，则数据会保存
+});
+
+/*
+Cloud::afterSave("Portfolios", function($portfolio, $currentUser) {
+    $portfolio->set('name', 'test123');
+    try {
+        $portfolio->save();
+    } catch (CloudException $ex) {
+        throw new FunctionError("保存 Post 对象失败: " . $ex->getMessage());
+    }
+});
+*/
 /*
 
 Cloud::onLogin(function($user) {

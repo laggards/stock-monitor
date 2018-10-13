@@ -5,5 +5,11 @@
         "leancloud/leancloud-sdk": "^0.8.1",
         "slim/php-view": "^2.1",
         "guzzlehttp/guzzle": "^6.3"
+    },
+    "autoload": {
+        "files": ["app/helper.php"],
+        "classmap" : [
+            "app/controllers"
+        ]
     }
 }
