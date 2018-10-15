@@ -7,9 +7,10 @@ body {
   height: 16px;
 }
 
-.sidebar .feather {
+.sidebar .feather, table .feather {
   vertical-align: text-bottom;
 }
+
 
 /*
  * Sidebar

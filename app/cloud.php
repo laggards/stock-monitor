@@ -52,7 +52,7 @@ Cloud::afterSave("Rebalancing", function($rebalancing, $currentUser) {
     try {
         if(!empty($prev_bebalancing_id)){
           $rebalance = getRebalancing($prev_bebalancing_id);
-          error_log($rebalance);
+          error_log('prev_bebalancing_id->'.$prev_bebalancing_id);
           if(!empty($rebalance)){
             $uniqueRbObj = new Query("Rebalancing");
             $uniqueRbObj->equalTo("origin_id", $rebalance->id);
