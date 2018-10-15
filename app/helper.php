@@ -46,7 +46,8 @@ function getRebalancing($last_rb_id){
             'Accept-Encoding' => 'gzip, deflate, br',
             'Host' => 'xueqiu.com',
             'Referer' => $request_url
-          ]
+          ],
+          //'proxy' => '125.70.13.77:8080'
     ]);
     return json_decode($res->getBody())->rebalancing;
 }

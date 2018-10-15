@@ -94,47 +94,92 @@ $app->get('/portfolio/{objectId}', function(Request $request, Response $response
     //$query->descend("createdAt");
     try {
         $portfolio = $query->get($args['objectId']);
+
+        $allBalanceQuery = new Query("Rebalancing");
+        $allBalance = $allBalanceQuery->equalTo('portfolio', $portfolio)->find();
     } catch (\Exception $ex) {
         error_log("Query portfolio failed!");
         $portfolio = array();
     }
-    return $this->view->render($response, "portfolio.phtml", array("portfolio" => $portfolio));
+    return $this->view->render($response, "portfolio.phtml", array("portfolio" => $portfolio, 'allBalance' => $allBalance));
 });
 
 $app->get('/portfolio/{objectId}/update', function(Request $request, Response $response, $args) {
     $query = new Query("Portfolios");
+    $portfolio = $query->get($args['objectId']);
 
-    //$query->descend("createdAt");
     try {
-        $portfolio = $query->get($args['objectId']);
-        $rebalance = getRebalancing($portfolio->get('last_rb_id'));
-        if(!empty($rebalance)){
-          $uniqueRbObj = new Query("Rebalancing");
-          $uniqueRbObj->equalTo("origin_id", $rebalance->id);
-          if($uniqueRbObj->count() == 0){
-            $rbObj = new LeanObject("Rebalancing");
-            $rbObj->set("portfolio", $portfolio);
-            $rbObj->set("origin_id", $rebalance->id);
-            $rbObj->set("status", $rebalance->status);
-            $rbObj->set("cube_id", $rebalance->cube_id);
-            $rbObj->set("prev_bebalancing_id", $rebalance->prev_bebalancing_id);
-            $rbObj->set("category", $rebalance->category);
-            $rbObj->set("created_at", $rebalance->created_at);
-            $rbObj->set("updated_at", $rebalance->updated_at);
-            $rbObj->set("cash_value", $rebalance->cash_value);
-            $rbObj->set("cash", $rebalance->cash);
-            $rbObj->set("error_code", $rebalance->error_code);
-            $rbObj->set("error_message", $rebalance->error_message);
-            $rbObj->set("error_status", $rebalance->error_status);
-            $rbObj->set("holdings", $rebalance->holdings);
-            $rbObj->set("rebalancing_histories", json_encode($rebalance->rebalancing_histories));
-            $rbObj->save();
-          }
+        $olderRbQuery = new Query("Rebalancing");
+        $olderRbQuery->ascend("updated_at");
+        $olderRb = $olderRbQuery->equalTo('portfolio', $portfolio)->first();
+        $older_rb_id = $olderRb->get('prev_bebalancing_id');
+
+        if(!empty($older_rb_id)){
+          $rebalance = getRebalancing($older_rb_id);
+
+          if(!empty($rebalance)){
+            $uniqueRbObj = new Query("Rebalancing");
+            $uniqueRbObj->equalTo("origin_id", $rebalance->id);
+            if($uniqueRbObj->count() == 0){
+              $rbObj = new LeanObject("Rebalancing");
+              $rbObj->set("portfolio", $portfolio);
+              $rbObj->set("origin_id", $rebalance->id);
+              $rbObj->set("status", $rebalance->status);
+              $rbObj->set("cube_id", $rebalance->cube_id);
+              $rbObj->set("prev_bebalancing_id", $rebalance->prev_bebalancing_id);
+              $rbObj->set("category", $rebalance->category);
+              $rbObj->set("created_at", $rebalance->created_at);
+              $rbObj->set("updated_at", $rebalance->updated_at);
+              $rbObj->set("cash_value", $rebalance->cash_value);
+              $rbObj->set("cash", $rebalance->cash);
+              $rbObj->set("error_code", $rebalance->error_code == null ? 'null': $rebalance->error_code);
+              $rbObj->set("error_message", $rebalance->error_message);
+              $rbObj->set("error_status", $rebalance->error_status == null ? 'null':$rebalance->error_status);
+              $rbObj->set("holdings", $rebalance->holdings == null ? 'null':$rebalance->holdings);
+              $rbObj->set("rebalancing_histories", json_encode($rebalance->rebalancing_histories));
+              $rbObj->set("comment", $rebalance->comment);
+              $rbObj->set("diff", $rebalance->diff);
+              $rbObj->set("new_buy_count", $rebalance->new_buy_count);
+              $rbObj->save();
+            }
         }
+      }
     } catch (\Exception $ex) {
-        error_log("Query portfolio failed!");
-        $portfolio = array();
+      $rebalance = getRebalancing($portfolio->get('last_rb_id'));
+      if(!empty($rebalance)){
+        $uniqueRbObj = new Query("Rebalancing");
+        if($uniqueRbObj->count() > 0){
+          $uniqueRbObj->equalTo("origin_id", $rebalance->id);
+          $isExist = $uniqueRbObj->count();
+        }else{
+          $isExist = 0;
+        }
+        $isExist = 0;
+        if($isExist == 0){
+          $rbObj = new LeanObject("Rebalancing");
+          $rbObj->set("portfolio", $portfolio);
+          $rbObj->set("origin_id", $rebalance->id);
+          $rbObj->set("status", $rebalance->status);
+          $rbObj->set("cube_id", $rebalance->cube_id);
+          $rbObj->set("prev_bebalancing_id", $rebalance->prev_bebalancing_id);
+          $rbObj->set("category", $rebalance->category);
+          $rbObj->set("created_at", $rebalance->created_at);
+          $rbObj->set("updated_at", $rebalance->updated_at);
+          $rbObj->set("cash_value", $rebalance->cash_value);
+          $rbObj->set("cash", $rebalance->cash);
+          $rbObj->set("error_code", $rebalance->error_code == null ? 0:$rebalance->error_code);
+          $rbObj->set("error_message", $rebalance->error_message);
+          $rbObj->set("error_status", $rebalance->error_status == null ? 'null':$rebalance->error_status);
+          $rbObj->set("holdings", $rebalance->holdings == null ? 'null':$rebalance->holdings);
+          $rbObj->set("rebalancing_histories", json_encode($rebalance->rebalancing_histories));
+          $rbObj->set("comment", $rebalance->comment);
+          $rbObj->set("diff", $rebalance->diff);
+          $rbObj->set("new_buy_count", $rebalance->new_buy_count);
+          $rbObj->save();
+        }
+      }
     }
+
     //return $this->view->render($response, "portfolio.phtml", array("portfolio" => $portfolio));
 });
 

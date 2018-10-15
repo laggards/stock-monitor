@@ -68,11 +68,14 @@ Cloud::afterSave("Rebalancing", function($rebalancing, $currentUser) {
               $rbObj->set("updated_at", $rebalance->updated_at);
               $rbObj->set("cash_value", $rebalance->cash_value);
               $rbObj->set("cash", $rebalance->cash);
-              $rbObj->set("error_code", $rebalance->error_code);
+              $rbObj->set("error_code", $rebalance->error_code == null ? 'null': $rebalance->error_code);
               $rbObj->set("error_message", $rebalance->error_message);
-              $rbObj->set("error_status", $rebalance->error_status);
-              $rbObj->set("holdings", $rebalance->holdings);
+              $rbObj->set("error_status", $rebalance->error_status == null ? 'null':$rebalance->error_status);
+              $rbObj->set("holdings", $rebalance->holdings == null ? 'null':$rebalance->holdings);
               $rbObj->set("rebalancing_histories", json_encode($rebalance->rebalancing_histories));
+              $rbObj->set("comment", $rebalance->comment);
+              $rbObj->set("diff", $rebalance->diff);
+              $rbObj->set("new_buy_count", $rebalance->new_buy_count);
               $rbObj->save();
             }
           }
