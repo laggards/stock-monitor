@@ -18,9 +18,8 @@ function getLastBebalancingID($symbol){
     $ret = ['name' => '', 'period'=> '', 'last_rb_id' => ''];
     preg_match_all("/<div[\s]*class=\"name\">(.*)<\/div>/isU",$res->getBody(),$matches);
     if(isset($matches[1]) && !empty($matches[1][0])){
-      $ret['name'] = $matches[1];
+      $ret['name'] = $matches[1][0];
     }
-
     preg_match_all("/<div[\s]*class=\"per\">(.*)<\/div>/isU",$res->getBody(),$matches);
     if(isset($matches[1]) && !empty($matches[1][0])){
       $ret['period'] = $matches[1];
@@ -30,7 +29,24 @@ function getLastBebalancingID($symbol){
     if(isset($matches[1]) && !empty($matches[1])){
       $ret['last_rb_id'] = $matches[1];
     }
-    //var_dump($ret['period']);
-    //exit();
+
     return $ret;
+}
+
+function getRebalancing($last_rb_id){
+    $request_url = 'https://xueqiu.com/cubes/rebalancing/show_origin.json?rb_id='.$last_rb_id;
+
+    $ret = null;
+    $client = new \GuzzleHttp\Client(['cookies'=>true]);
+    $res = $client->request('GET', $request_url,[
+          'referer' => true,
+          'headers' => [
+            'User-Agent' => 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
+            'Accept' => 'application/json',
+            'Accept-Encoding' => 'gzip, deflate, br',
+            'Host' => 'xueqiu.com',
+            'Referer' => $request_url
+          ]
+    ]);
+    return json_decode($res->getBody())->rebalancing;
 }

@@ -5,6 +5,9 @@ body {
 .feather {
   width: 16px;
   height: 16px;
+}
+
+.sidebar .feather {
   vertical-align: text-bottom;
 }
 

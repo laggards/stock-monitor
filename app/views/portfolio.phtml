@@ -90,16 +90,11 @@
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-            <h1 class="h2">组合列表</h1>
+            <h1 class="h2"><?= $portfolio->get('name') ?> <a href="https://xueqiu.com/P/<?= $portfolio->get('symbol') ?>" target="_blank"><small><?= $portfolio->get('symbol') ?> </small> <span data-feather="external-link"></span></a></h1>
             <div class="btn-toolbar mb-2 mb-md-0">
               <div class="btn-group mr-2">
-                <button class="btn btn-sm btn-outline-secondary">Share</button>
-                <button class="btn btn-sm btn-outline-secondary">Export</button>
+                <button class="btn btn-sm btn-outline-secondary">导出</button>
               </div>
-              <button class="btn btn-sm btn-outline-secondary dropdown-toggle">
-                <span data-feather="calendar"></span>
-                This week
-              </button>
             </div>
           </div>
 
@@ -137,17 +132,6 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <?php foreach($portfolios as $portfolio): ?>
-                    <tr>
-                      <td><a href="/portfolio/<?= $portfolio->get('objectId') ?>"><?= $portfolio->get('symbol') ?></a></td>
-                      <td><?= $portfolio->get('name') ?></td>
-                      <td><?= $portfolio->get('status') ?></td>
-                      <td><?= $portfolio->get('period')[0] ?></td>
-                      <td><?= $portfolio->get('period')[1] ?></td>
-                      <td><?= $portfolio->get('period')[2] ?></td>
-                      <td><?= $portfolio->get('updatedAt')->format("Y-m-d H:i:s") ?></td>
-                    </tr>
-                  <?php endforeach ?>
                 </tbody>
               </table>
             </div>

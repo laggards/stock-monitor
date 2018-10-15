@@ -73,25 +73,69 @@ $app->get('/portfolios', function(Request $request, Response $response) {
 $app->post("/portfolios", function(Request $request, Response $response) {
     try {
         $data = $request->getParsedBody();
-        $query = new Query("Portfolios");
-        $query->equalTo("symbol", $data["symbol"]);
-        if ($query->count() == 0) {
-            $portfolioProperty = getLastBebalancingID($data["symbol"]);
-            $portfolio = new LeanObject("Portfolios");
-            $portfolio->set("symbol", $data["symbol"]);
-            $portfolio->set('name', $portfolioProperty['name']);
-            $portfolio->set("last_rb_id", $portfolioProperty['last_rb_id']);
-            $portfolio->set("period", $portfolioProperty['period']);
-            $portfolio->set("status", true);
-            $portfolio->save();
-            return $response->withStatus(302)->withHeader("Location", "/portfolios");
-        } else {
-            return $response->withStatus(500)->withHeader('Content-Type', 'text/html')->write('Something went wrong!');
-        }
+        $portfolioProperty = getLastBebalancingID($data["symbol"]);
+        $portfolio = new LeanObject("Portfolios");
+        $portfolio->set("symbol", $data["symbol"]);
+        $portfolio->set('name', $portfolioProperty['name']);
+        $portfolio->set("last_rb_id", $portfolioProperty['last_rb_id']);
+        $portfolio->set("period", $portfolioProperty['period']);
+        $portfolio->set("status", true);
+        $portfolio->save();
+
+        return $response->withStatus(302)->withHeader("Location", "/portfolios");
     } catch (\Exception $ex) {
         return $response->withStatus(302)->withHeader("Location", "/portfolios");
     }
+});
 
+$app->get('/portfolio/{objectId}', function(Request $request, Response $response, $args) {
+    $query = new Query("Portfolios");
+
+    //$query->descend("createdAt");
+    try {
+        $portfolio = $query->get($args['objectId']);
+    } catch (\Exception $ex) {
+        error_log("Query portfolio failed!");
+        $portfolio = array();
+    }
+    return $this->view->render($response, "portfolio.phtml", array("portfolio" => $portfolio));
+});
+
+$app->get('/portfolio/{objectId}/update', function(Request $request, Response $response, $args) {
+    $query = new Query("Portfolios");
+
+    //$query->descend("createdAt");
+    try {
+        $portfolio = $query->get($args['objectId']);
+        $rebalance = getRebalancing($portfolio->get('last_rb_id'));
+        if(!empty($rebalance)){
+          $uniqueRbObj = new Query("Rebalancing");
+          $uniqueRbObj->equalTo("origin_id", $rebalance->id);
+          if($uniqueRbObj->count() == 0){
+            $rbObj = new LeanObject("Rebalancing");
+            $rbObj->set("portfolio", $portfolio);
+            $rbObj->set("origin_id", $rebalance->id);
+            $rbObj->set("status", $rebalance->status);
+            $rbObj->set("cube_id", $rebalance->cube_id);
+            $rbObj->set("prev_bebalancing_id", $rebalance->prev_bebalancing_id);
+            $rbObj->set("category", $rebalance->category);
+            $rbObj->set("created_at", $rebalance->created_at);
+            $rbObj->set("updated_at", $rebalance->updated_at);
+            $rbObj->set("cash_value", $rebalance->cash_value);
+            $rbObj->set("cash", $rebalance->cash);
+            $rbObj->set("error_code", $rebalance->error_code);
+            $rbObj->set("error_message", $rebalance->error_message);
+            $rbObj->set("error_status", $rebalance->error_status);
+            $rbObj->set("holdings", $rebalance->holdings);
+            $rbObj->set("rebalancing_histories", json_encode($rebalance->rebalancing_histories));
+            $rbObj->save();
+          }
+        }
+    } catch (\Exception $ex) {
+        error_log("Query portfolio failed!");
+        $portfolio = array();
+    }
+    //return $this->view->render($response, "portfolio.phtml", array("portfolio" => $portfolio));
 });
 
 // 显示 todo 列表
