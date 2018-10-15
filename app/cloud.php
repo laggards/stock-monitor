@@ -1,6 +1,7 @@
 <?php
 
 use \LeanCloud\Engine\Cloud;
+use \LeanCloud\LeanObject;
 use \LeanCloud\Query;
 
 /*
