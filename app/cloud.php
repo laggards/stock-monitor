@@ -46,7 +46,7 @@ Cloud::define("sieveOfPrimes", function($params, $user) {
 });
 
 Cloud::afterSave("Rebalancing", function($rebalancing, $currentUser) {
-    $prev_bebalancing_id = $rebalancing->prev_bebalancing_id;
+    $prev_bebalancing_id = $rebalancing->get('prev_bebalancing_id');
     try {
         if(!empty($prev_bebalancing_id)){
           $rebalance = getRebalancing($prev_bebalancing_id);
@@ -55,7 +55,7 @@ Cloud::afterSave("Rebalancing", function($rebalancing, $currentUser) {
             $uniqueRbObj->equalTo("origin_id", $rebalance->id);
             if($uniqueRbObj->count() == 0){
               $rbObj = new LeanObject("Rebalancing");
-              $rbObj->set("portfolio", $rebalancing->portfolio);
+              $rbObj->set("portfolio", $rebalancing->get('portfolio'));
               $rbObj->set("origin_id", $rebalance->id);
               $rbObj->set("status", $rebalance->status);
               $rbObj->set("cube_id", $rebalance->cube_id);
