@@ -47,9 +47,11 @@ Cloud::define("sieveOfPrimes", function($params, $user) {
 
 Cloud::afterSave("Rebalancing", function($rebalancing, $currentUser) {
     $prev_bebalancing_id = $rebalancing->get('prev_bebalancing_id');
+    error_log($prev_bebalancing_id);
     try {
         if(!empty($prev_bebalancing_id)){
           $rebalance = getRebalancing($prev_bebalancing_id);
+          error_log($rebalance);
           if(!empty($rebalance)){
             $uniqueRbObj = new Query("Rebalancing");
             $uniqueRbObj->equalTo("origin_id", $rebalance->id);
