@@ -45,6 +45,7 @@ Cloud::define("sieveOfPrimes", function($params, $user) {
     return $numbers;
 });
 
+/*
 Cloud::beforeSave("Portfolios", function($portfolio, $currentUser) {
     $query = new Query("Portfolios");
     $query->equalTo("symbol", $portfolio->get('symbol'));
@@ -56,7 +57,7 @@ Cloud::beforeSave("Portfolios", function($portfolio, $currentUser) {
     }
     // 如果正常返回，则数据会保存
 });
-
+*/
 /*
 Cloud::afterSave("Portfolios", function($portfolio, $currentUser) {
     $portfolio->set('name', 'test123');

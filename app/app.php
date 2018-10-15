@@ -73,11 +73,21 @@ $app->get('/portfolios', function(Request $request, Response $response) {
 $app->post("/portfolios", function(Request $request, Response $response) {
     try {
         $data = $request->getParsedBody();
-        $portfolio = new LeanObject("Portfolios");
-        $portfolio->set("symbol", $data["symbol"]);
-        $portfolio->set("status", true);
-        $portfolio->save();
-        return $response->withStatus(302)->withHeader("Location", "/portfolios");
+        $query = new Query("Portfolios");
+        $query->equalTo("symbol", $data["symbol"]);
+        if ($query->count() == 0) {
+            $portfolioProperty = getLastBebalancingID($data["symbol"]);
+            $portfolio = new LeanObject("Portfolios");
+            $portfolio->set("symbol", $data["symbol"]);
+            $portfolio->set('name', $portfolioProperty['name']);
+            $portfolio->set("last_rb_id", $portfolioProperty['last_rb_id']);
+            $portfolio->set("period", $portfolioProperty['period']);
+            $portfolio->set("status", true);
+            $portfolio->save();
+            return $response->withStatus(302)->withHeader("Location", "/portfolios");
+        } else {
+            return $response->withStatus(500)->withHeader('Content-Type', 'text/html')->write('Something went wrong!');
+        }
     } catch (\Exception $ex) {
         return $response->withStatus(302)->withHeader("Location", "/portfolios");
     }
