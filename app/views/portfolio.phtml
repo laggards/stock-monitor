@@ -28,7 +28,12 @@
               </div>
             </div>
           </div>
-
+          <div class="alert alert-danger alert-dismissible fade show" style="display:none;" role="alert" id="rebalancing_warning">
+            <strong>请注意！</strong> 该组合有新的调仓.
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
           <div class="row">
             <div class="col">
               <h2>近期调仓</h2>
@@ -84,7 +89,7 @@
         </div>
       </div>
     </div>
-
+    <audio src="/audio/dog.mp3" preload="meta" loop id="warning_tone"></audio>
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
@@ -112,16 +117,29 @@
       //localStorage.setItem('debug', 'LC*');
       var doingQuery = new AV.Query('Portfolios').equalTo('symbol', '<?= $portfolio->get('symbol') ?>');
 
+      var warning_tone = document.getElementById('warning_tone');
       doingQuery.find().then(function(doingList) {
-        console.log(doingList);
+        //console.log(doingList);
+
       });
 
+      //console.log(doingQuery)
       doingQuery.subscribe().then(function(liveQuery) {
+
           // liveQuery 是 doingQuery 的订阅
           liveQuery.on('update', function(newDoingItem) {
             // add newDoingItem to doingList
+            $('#rebalancing_warning').show();
             console.log(newDoingItem)
+            if(warning_tone.paused){
+              warning_tone.play();
+            }
           });
+      });
+      $('button.close').click(function () {
+          warning_tone.pause();
+          $('#rebalancing_warning').hide();
+          return false;
       });
     </script>
   </body>
