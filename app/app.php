@@ -48,8 +48,22 @@ $container['HomeController'] = function($c) {
 $app->get('/test', \HomeController::class . ':home');
 
 $app->get('/', function (Request $request, Response $response) {
+    $query = new Query("Portfolios");
+    $query->descend("createdAt");
+    try {
+        $portfolios = $query->find();
+        $query = new Query("Rebalancing");
+        foreach ($portfolios as $portfolio) {
+          $lastRb = $query->equalTo('portfolio', $portfolio)->first();
+          $portfolio->rebalancing = $lastRb;
+        }
+    } catch (\Exception $ex) {
+        error_log("Query portfolio failed!");
+        $portfolios = array();
+    }
     return $this->view->render($response, "index.phtml", array(
         "currentTime" => new \DateTime(),
+        "portfolios" => $portfolios,
     ));
 });
 
@@ -59,7 +73,7 @@ $app->get('/portfolios', function(Request $request, Response $response) {
     $query = new Query("Portfolios");
     $query->descend("createdAt");
     try {
-        $portfolios = $query->find();
+        $portfolios = $query->equalTo('status', true)->find();
     } catch (\Exception $ex) {
         error_log("Query portfolio failed!");
         $portfolios = array();
@@ -109,9 +123,11 @@ $app->get('/portfolio/{objectId}/update', function(Request $request, Response $r
     $portfolio = $query->get($args['objectId']);
 
     try {
-        $olderRbQuery = new Query("Rebalancing");
-        $olderRbQuery->ascend("updated_at");
-        $olderRb = $olderRbQuery->equalTo('portfolio', $portfolio)->first();
+        $rbQuery = new Query("Rebalancing");
+        //$lastRb = $rbQuery->equalTo('origin_id', (int)$portfolio->get('last_rb_id'))->first();
+
+        $rbQuery->ascend("updated_at");
+        $olderRb = $rbQuery->equalTo('portfolio', $portfolio)->first();
         $older_rb_id = $olderRb->get('prev_bebalancing_id');
 
         if(!empty($older_rb_id)){

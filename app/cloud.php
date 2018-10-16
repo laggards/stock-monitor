@@ -46,13 +46,29 @@ Cloud::define("sieveOfPrimes", function($params, $user) {
     return $numbers;
 });
 
+Cloud::define("updatePortfolio", function($params, $user) {
+    $query = new Query("Portfolios");
+    $portfolios = $query->equalTo('status', true)->find();
+    foreach ($portfolios as $portfolio) {
+      $portfolioProperty = getLastBebalancingID($portfolio->get('symbol'));
+      if($portfolioProperty['name'] != $portfolio->get('name')){
+        $portfolio->set('name', $portfolioProperty['name']);
+      }
+      if($portfolioProperty['period'] != $portfolio->get('period')){
+        $portfolio->set('period', $portfolioProperty['period']);
+      }
+      if($portfolioProperty['last_rb_id'] != $portfolio->get('last_rb_id')){
+        $portfolio->set('last_rb_id', $portfolioProperty['last_rb_id']);
+      }
+      $portfolio->save();
+    }
+});
+
 Cloud::afterSave("Rebalancing", function($rebalancing, $currentUser) {
     $prev_bebalancing_id = $rebalancing->get('prev_bebalancing_id');
-    error_log($prev_bebalancing_id);
     try {
         if(!empty($prev_bebalancing_id)){
           $rebalance = getRebalancing($prev_bebalancing_id);
-          error_log('prev_bebalancing_id->'.$prev_bebalancing_id);
           if(!empty($rebalance)){
             $uniqueRbObj = new Query("Rebalancing");
             $uniqueRbObj->equalTo("origin_id", $rebalance->id);
@@ -81,6 +97,7 @@ Cloud::afterSave("Rebalancing", function($rebalancing, $currentUser) {
           }
         }
     } catch (CloudException $ex) {
+        error_log('prev_bebalancing_id->'.$prev_bebalancing_id);
         throw new FunctionError("保存 Post 对象失败: " . $ex->getMessage());
     }
 });

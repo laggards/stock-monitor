@@ -34,200 +34,114 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/contacts">
+                <a class="nav-link" href="#">
                   <span data-feather="shopping-cart"></span>
                   监控提醒
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/logs">
+                <a class="nav-link" href="#">
                   <span data-feather="bar-chart-2"></span>
                   运行日志
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/setting">
+                <a class="nav-link" href="#">
                   <span data-feather="layers"></span>
                   系统设置
                 </a>
               </li>
             </ul>
 
-            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-              <span>待办事项</span>
-              <a class="d-flex align-items-center text-muted" href="#">
-                <span data-feather="plus-circle"></span>
-              </a>
-            </h6>
-            <ul class="nav flex-column mb-2">
-              <li class="nav-item">
-                <a class="nav-link" href="#">
-                  <span data-feather="file-text"></span>
-                  Current month
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">
-                  <span data-feather="file-text"></span>
-                  Last quarter
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">
-                  <span data-feather="file-text"></span>
-                  Social engagement
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">
-                  <span data-feather="file-text"></span>
-                  Year-end sale
-                </a>
-              </li>
-            </ul>
+
           </div>
         </nav>
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-            <h1 class="h2">Dashboard</h1>
-            <div class="btn-toolbar mb-2 mb-md-0">
-              <div class="btn-group mr-2">
-                <button class="btn btn-sm btn-outline-secondary">Share</button>
-                <button class="btn btn-sm btn-outline-secondary">Export</button>
-              </div>
-              <button class="btn btn-sm btn-outline-secondary dropdown-toggle">
-                <span data-feather="calendar"></span>
-                This week
-              </button>
-            </div>
+            <h1 class="h2">控制台</h1>
           </div>
 
-          <h2>Section title</h2>
+          <h2>监控组合</h2>
           <div class="table-responsive">
-            <table class="table table-striped table-sm">
+            <table class="table table-striped table-bordered rounded">
               <thead>
                 <tr>
-                  <th>#</th>
-                  <th>Header</th>
-                  <th>Header</th>
-                  <th>Header</th>
-                  <th>Header</th>
+                  <th>#标识</th>
+                  <th>名称</th>
+                  <th>状态</th>
+                  <th>最近调仓</th>
+                  <th>日涨跌</th>
+                  <th>月涨跌</th>
+                  <th>净值</th>
+                  <th>更新时间</th>
                 </tr>
               </thead>
               <tbody>
+                <?php foreach($portfolios as $portfolio): ?>
+                  <tr>
+                    <td><a href="/portfolio/<?= $portfolio->get('objectId') ?>"><?= $portfolio->get('symbol') ?></a></td>
+                    <td><?= $portfolio->get('name') ?></td>
+                    <td><?= $portfolio->get('status') == 1? '运行' : '暂停' ?></td>
+                    <td><?= $portfolio->get('last_rb_id') ?></td>
+                    <td><?= $portfolio->get('period')[0] ?></td>
+                    <td><?= $portfolio->get('period')[1] ?></td>
+                    <td><?= $portfolio->get('period')[2] ?></td>
+                    <td><?= $portfolio->get('updatedAt')->format("Y-m-d H:i:s") ?></td>
+                  </tr>
+
+                <?php endforeach ?>
+              </tbody>
+            </table>
+            <h2>调仓记录</h2>
+            <table class="table table-striped table-bordered rounded">
+              <thead>
                 <tr>
-                  <td>1,001</td>
-                  <td>Lorem</td>
-                  <td>ipsum</td>
-                  <td>dolor</td>
-                  <td>sit</td>
+                  <th>#标识</th>
+                  <th>名称</th>
+                  <th>时间</th>
+                  <th>类别</th>
+                  <th>状态</th>
+                  <th>证券名称</th>
+                  <th>证券代码</th>
+                  <th>前持仓</th>
+                  <th>后持仓</th>
+                  <th>成交价</th>
                 </tr>
-                <tr>
-                  <td>1,002</td>
-                  <td>amet</td>
-                  <td>consectetur</td>
-                  <td>adipiscing</td>
-                  <td>elit</td>
-                </tr>
-                <tr>
-                  <td>1,003</td>
-                  <td>Integer</td>
-                  <td>nec</td>
-                  <td>odio</td>
-                  <td>Praesent</td>
-                </tr>
-                <tr>
-                  <td>1,003</td>
-                  <td>libero</td>
-                  <td>Sed</td>
-                  <td>cursus</td>
-                  <td>ante</td>
-                </tr>
-                <tr>
-                  <td>1,004</td>
-                  <td>dapibus</td>
-                  <td>diam</td>
-                  <td>Sed</td>
-                  <td>nisi</td>
-                </tr>
-                <tr>
-                  <td>1,005</td>
-                  <td>Nulla</td>
-                  <td>quis</td>
-                  <td>sem</td>
-                  <td>at</td>
-                </tr>
-                <tr>
-                  <td>1,006</td>
-                  <td>nibh</td>
-                  <td>elementum</td>
-                  <td>imperdiet</td>
-                  <td>Duis</td>
-                </tr>
-                <tr>
-                  <td>1,007</td>
-                  <td>sagittis</td>
-                  <td>ipsum</td>
-                  <td>Praesent</td>
-                  <td>mauris</td>
-                </tr>
-                <tr>
-                  <td>1,008</td>
-                  <td>Fusce</td>
-                  <td>nec</td>
-                  <td>tellus</td>
-                  <td>sed</td>
-                </tr>
-                <tr>
-                  <td>1,009</td>
-                  <td>augue</td>
-                  <td>semper</td>
-                  <td>porta</td>
-                  <td>Mauris</td>
-                </tr>
-                <tr>
-                  <td>1,010</td>
-                  <td>massa</td>
-                  <td>Vestibulum</td>
-                  <td>lacinia</td>
-                  <td>arcu</td>
-                </tr>
-                <tr>
-                  <td>1,011</td>
-                  <td>eget</td>
-                  <td>nulla</td>
-                  <td>Class</td>
-                  <td>aptent</td>
-                </tr>
-                <tr>
-                  <td>1,012</td>
-                  <td>taciti</td>
-                  <td>sociosqu</td>
-                  <td>ad</td>
-                  <td>litora</td>
-                </tr>
-                <tr>
-                  <td>1,013</td>
-                  <td>torquent</td>
-                  <td>per</td>
-                  <td>conubia</td>
-                  <td>nostra</td>
-                </tr>
-                <tr>
-                  <td>1,014</td>
-                  <td>per</td>
-                  <td>inceptos</td>
-                  <td>himenaeos</td>
-                  <td>Curabitur</td>
-                </tr>
-                <tr>
-                  <td>1,015</td>
-                  <td>sodales</td>
-                  <td>ligula</td>
-                  <td>in</td>
-                  <td>libero</td>
-                </tr>
+              </thead>
+              <tbody>
+                <?php foreach($portfolios as $portfolio): ?>
+                  <?php $balance = $portfolio->rebalancing;?>
+                  <?php $rebalancing_histories = json_decode($balance->get('rebalancing_histories')); $rowNum = count($rebalancing_histories); ?>
+                  <tr class="<?= $balance->get('error_code') == 'null'? '':'table-danger' ?><?= $balance->get('prev_bebalancing_id') != 0? '':' table-info' ?>">
+                    <td rowspan="<?= $rowNum ?>"><a href="/portfolio/<?= $portfolio->get('objectId') ?>"><?= $portfolio->get('symbol') ?></a></td>
+                    <td rowspan="<?= $rowNum ?>"><?= $portfolio->get('name') ?></td>
+                    <td rowspan="<?= $rowNum ?>"><?= date("Y-m-d H:i:s", $rebalancing_histories[0]->created_at/1000) ?></td>
+                    <td rowspan="<?= $rowNum ?>"><?= $balance->get('category') == 'user_rebalancing'? '用户调仓':'系统调仓' ?></td>
+                    <?php if($balance->get('error_code') == 'null'): ?>
+                      <td rowspan="<?= $rowNum ?>">成功</td>
+                    <?php else:?>
+                      <td rowspan="<?= $rowNum ?>" data-toggle="tooltip" data-placement="top" title="<?= $balance->get('error_message') ?>">失败 <span data-feather="help-circle"></span></td>
+                    <?php endif ?>
+                    <td><?= $rebalancing_histories[0]->stock_name ?></td>
+                    <td><?= $rebalancing_histories[0]->stock_symbol ?></td>
+                    <td><?= $rebalancing_histories[0]->prev_weight == 0 ? '0.00%': number_format($rebalancing_histories[0]->prev_weight, 2).'%' ?></td>
+                    <td><?= $rebalancing_histories[0]->target_weight == 0 ? '0.00%': number_format($rebalancing_histories[0]->target_weight, 2).'%' ?></td>
+                    <td>¥<?= $rebalancing_histories[0]->price ?></td>
+                    <?php unset($rebalancing_histories[0]) ?>
+                  </tr>
+                  <?php if($rowNum > 1): ?>
+                    <?php foreach ($rebalancing_histories as $value): ?>
+                  <tr class="<?= $balance->get('error_code') == 'null'? '':'table-danger' ?><?= $balance->get('prev_bebalancing_id') != 0? '':' table-info' ?>">
+                    <td><?= $value->stock_name ?></td>
+                    <td><?= $value->stock_symbol ?></td>
+                    <td><?= $value->prev_weight == 0 ? '0.00%': number_format($value->prev_weight, 2).'%' ?></td>
+                    <td><?= $value->target_weight == 0 ? '0.00%': number_format($value->target_weight, 2).'%' ?></td>
+                    <td>¥<?= $value->price ?></td>
+                  </tr>
+                    <?php endforeach ?>
+                  <?php endif ?>
+                <?php endforeach ?>
               </tbody>
             </table>
           </div>
