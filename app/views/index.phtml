@@ -112,36 +112,51 @@
               <tbody>
                 <?php foreach($portfolios as $portfolio): ?>
                   <?php $balance = $portfolio->rebalancing;?>
-                  <?php $rebalancing_histories = json_decode($balance->get('rebalancing_histories')); $rowNum = count($rebalancing_histories); ?>
-                  <tr class="<?= $balance->get('error_code') == 'null'? '':'table-danger' ?><?= $balance->get('prev_bebalancing_id') != 0? '':' table-info' ?>">
-                    <td rowspan="<?= $rowNum ?>"><a href="/portfolio/<?= $portfolio->get('objectId') ?>"><?= $portfolio->get('symbol') ?></a></td>
-                    <td rowspan="<?= $rowNum ?>"><?= $portfolio->get('name') ?></td>
-                    <td rowspan="<?= $rowNum ?>"><?= date("Y-m-d H:i:s", $rebalancing_histories[0]->created_at/1000) ?></td>
-                    <td rowspan="<?= $rowNum ?>"><?= $balance->get('category') == 'user_rebalancing'? '用户调仓':'系统调仓' ?></td>
-                    <?php if($balance->get('error_code') == 'null'): ?>
-                      <td rowspan="<?= $rowNum ?>">成功</td>
-                    <?php else:?>
-                      <td rowspan="<?= $rowNum ?>" data-toggle="tooltip" data-placement="top" title="<?= $balance->get('error_message') ?>">失败 <span data-feather="help-circle"></span></td>
+                  <?php if(!empty($balance)): ?>
+                    <?php $rebalancing_histories = json_decode($balance->get('rebalancing_histories')); $rowNum = count($rebalancing_histories); ?>
+                    <tr class="<?= $balance->get('error_code') == 'null'? '':'table-danger' ?><?= $balance->get('prev_bebalancing_id') != 0? '':' table-info' ?>">
+                      <td rowspan="<?= $rowNum ?>"><a href="/portfolio/<?= $portfolio->get('objectId') ?>"><?= $portfolio->get('symbol') ?></a></td>
+                      <td rowspan="<?= $rowNum ?>"><?= $portfolio->get('name') ?></td>
+                      <td rowspan="<?= $rowNum ?>"><?= date("Y-m-d H:i:s", $rebalancing_histories[0]->created_at/1000) ?></td>
+                      <td rowspan="<?= $rowNum ?>"><?= $balance->get('category') == 'user_rebalancing'? '用户调仓':'系统调仓' ?></td>
+                      <?php if($balance->get('error_code') == 'null'): ?>
+                        <td rowspan="<?= $rowNum ?>">成功</td>
+                      <?php else:?>
+                        <td rowspan="<?= $rowNum ?>" data-toggle="tooltip" data-placement="top" title="<?= $balance->get('error_message') ?>">失败 <span data-feather="help-circle"></span></td>
+                      <?php endif ?>
+                      <td><?= $rebalancing_histories[0]->stock_name ?></td>
+                      <td><?= $rebalancing_histories[0]->stock_symbol ?></td>
+                      <td><?= $rebalancing_histories[0]->prev_weight == 0 ? '0.00%': number_format($rebalancing_histories[0]->prev_weight, 2).'%' ?></td>
+                      <td><?= $rebalancing_histories[0]->target_weight == 0 ? '0.00%': number_format($rebalancing_histories[0]->target_weight, 2).'%' ?></td>
+                      <td>¥<?= $rebalancing_histories[0]->price ?></td>
+                      <?php unset($rebalancing_histories[0]) ?>
+                    </tr>
+                    <?php if($rowNum > 1): ?>
+                      <?php foreach ($rebalancing_histories as $value): ?>
+                    <tr class="<?= $balance->get('error_code') == 'null'? '':'table-danger' ?><?= $balance->get('prev_bebalancing_id') != 0? '':' table-info' ?>">
+                      <td><?= $value->stock_name ?></td>
+                      <td><?= $value->stock_symbol ?></td>
+                      <td><?= $value->prev_weight == 0 ? '0.00%': number_format($value->prev_weight, 2).'%' ?></td>
+                      <td><?= $value->target_weight == 0 ? '0.00%': number_format($value->target_weight, 2).'%' ?></td>
+                      <td>¥<?= $value->price ?></td>
+                    </tr>
+                      <?php endforeach ?>
                     <?php endif ?>
-                    <td><?= $rebalancing_histories[0]->stock_name ?></td>
-                    <td><?= $rebalancing_histories[0]->stock_symbol ?></td>
-                    <td><?= $rebalancing_histories[0]->prev_weight == 0 ? '0.00%': number_format($rebalancing_histories[0]->prev_weight, 2).'%' ?></td>
-                    <td><?= $rebalancing_histories[0]->target_weight == 0 ? '0.00%': number_format($rebalancing_histories[0]->target_weight, 2).'%' ?></td>
-                    <td>¥<?= $rebalancing_histories[0]->price ?></td>
-                    <?php unset($rebalancing_histories[0]) ?>
-                  </tr>
-                  <?php if($rowNum > 1): ?>
-                    <?php foreach ($rebalancing_histories as $value): ?>
-                  <tr class="<?= $balance->get('error_code') == 'null'? '':'table-danger' ?><?= $balance->get('prev_bebalancing_id') != 0? '':' table-info' ?>">
-                    <td><?= $value->stock_name ?></td>
-                    <td><?= $value->stock_symbol ?></td>
-                    <td><?= $value->prev_weight == 0 ? '0.00%': number_format($value->prev_weight, 2).'%' ?></td>
-                    <td><?= $value->target_weight == 0 ? '0.00%': number_format($value->target_weight, 2).'%' ?></td>
-                    <td>¥<?= $value->price ?></td>
-                  </tr>
-                    <?php endforeach ?>
+                  <?php else: ?>
+                    <tr>
+                      <td rowspan="<?= $rowNum ?>"><a href="/portfolio/<?= $portfolio->get('objectId') ?>"><?= $portfolio->get('symbol') ?></a></td>
+                      <td rowspan="<?= $rowNum ?>"><?= $portfolio->get('name') ?></td>
+                      <td>-</td>
+                      <td>-</td>
+                      <td>-</td>
+                      <td>-</td>
+                      <td>-</td>
+                      <td>-</td>
+                      <td>-</td>
+                      <td>-</td>
+                    <tr>
                   <?php endif ?>
-                <?php endforeach ?>
+                  <?php endforeach ?>
               </tbody>
             </table>
           </div>

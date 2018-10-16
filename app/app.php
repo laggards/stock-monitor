@@ -54,8 +54,13 @@ $app->get('/', function (Request $request, Response $response) {
         $portfolios = $query->find();
         $query = new Query("Rebalancing");
         foreach ($portfolios as $portfolio) {
-          $lastRb = $query->equalTo('portfolio', $portfolio)->first();
-          $portfolio->rebalancing = $lastRb;
+          $lastRb = $query->equalTo('portfolio', $portfolio);
+          if($lastRb->count() > 0){
+            $portfolio->rebalancing = $lastRb->first();
+          }else{
+            $portfolio->rebalancing = null;
+          }
+
         }
     } catch (\Exception $ex) {
         error_log("Query portfolio failed!");
