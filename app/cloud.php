@@ -51,7 +51,7 @@ Cloud::define("updatePortfolio", function($params, $user) {
     $portfolios = $query->equalTo('status', true)->find();
     foreach ($portfolios as $portfolio) {
       $portfolioProperty = getLastBebalancingID($portfolio->get('symbol'));
-      if($portfolioProperty['last_rb_id'] != $portfolio->get('last_rb_id' || $portfolioProperty['period'] != $portfolio->get('period')){
+      if($portfolioProperty['last_rb_id'] != $portfolio->get('last_rb_id') || $portfolioProperty['period'] != $portfolio->get('period')){
         $portfolio->set('name', $portfolioProperty['name']);
         $portfolio->set('period', $portfolioProperty['period']);
         $portfolio->set('last_rb_id', $portfolioProperty['last_rb_id']);
