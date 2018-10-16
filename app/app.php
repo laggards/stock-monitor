@@ -51,7 +51,7 @@ $app->get('/', function (Request $request, Response $response) {
     $query = new Query("Portfolios");
     $query->descend("createdAt");
     try {
-        $portfolios = $query->find();
+        $portfolios = $query->equalTo('status', true)->find();
         $query = new Query("Rebalancing");
         foreach ($portfolios as $portfolio) {
           $lastRb = $query->equalTo('portfolio', $portfolio);
@@ -78,7 +78,7 @@ $app->get('/portfolios', function(Request $request, Response $response) {
     $query = new Query("Portfolios");
     $query->descend("createdAt");
     try {
-        $portfolios = $query->equalTo('status', true)->find();
+        $portfolios = $query->find();
     } catch (\Exception $ex) {
         error_log("Query portfolio failed!");
         $portfolios = array();
