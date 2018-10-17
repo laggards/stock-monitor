@@ -105,7 +105,7 @@ Cloud::afterSave("Portfolios", function($portfolio, $currentUser) {
     $last_rb_id = $portfolio->get('last_rb_id');
     try {
       if($last_rb_id){
-        $rebalance = getRebalancing($older_rb_id);
+        $rebalance = getRebalancing($last_rb_id);
         if(!empty($rebalance)){
           $rbObj = new LeanObject("Rebalancing");
           $rbObj->set("portfolio", $portfolio);
