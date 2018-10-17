@@ -227,7 +227,18 @@ $app->get('/hello/{name}', function (Request $request, Response $response) {
 
 // 显示 todo 列表
 $app->get('/mobile', function(Request $request, Response $response) {
-    return 'It Work.';
+  $query = new Query("Portfolios");
+  $query->descend("createdAt");
+  try {
+      $portfolios = $query->equalTo('status',true)->find();
+  } catch (\Exception $ex) {
+      error_log("Query Portfolios failed!");
+      $todos = array();
+  }
+  return $this->view->render($response, "mobile.phtml", array(
+      "title" => "组合列表",
+      "portfolios" => $portfolios,
+  ));
 });
 
 $app->run();
