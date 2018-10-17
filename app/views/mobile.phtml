@@ -59,18 +59,15 @@
 <script>
 $("#mescroll").data("downCount", 0);
 var mescroll = new MeScroll("mescroll", {
+
         down: {
+          auto: false,
+          htmlContent: '<p class="downwarp-tip">组合刷新中...</p>',
 					callback: downCallback
 				}
 			});
 function downCallback() {
-  var downCount = $("#mescroll").data("downCount");
-  $("#mescroll").data("downCount", downCount + 1)
-  if(downCount > 0){
-    mescroll.endSuccess();
-    location.reload();
-  }
-  mescroll.endSuccess();
+  location.reload();
   //
 }
 </script>
