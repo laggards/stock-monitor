@@ -225,5 +225,9 @@ $app->get('/hello/{name}', function (Request $request, Response $response) {
     return $response;
 });
 
+// 显示 todo 列表
+$app->get('/mobile', function(Request $request, Response $response) {
+    return 'It Work.';
+});
 
 $app->run();
