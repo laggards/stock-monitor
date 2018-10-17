@@ -94,7 +94,7 @@ $app->post("/portfolios", function(Request $request, Response $response) {
     try {
         $data = $request->getParsedBody();
         $portfolioProperty = getLastBebalancingID($data["symbol"]);
-        if($portfolioProperty && !empty($data["name"])){
+        if(!empty($portfolioProperty['name'])){
           $portfolio = new LeanObject("Portfolios");
           $portfolio->set("symbol", $data["symbol"]);
           $portfolio->set('name', $portfolioProperty['name']);
