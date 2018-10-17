@@ -78,7 +78,7 @@ Cloud::define("updateRebalance", function($params, $user) {
             $rbQuery->equalTo("origin_id", $rebalance->id);
             if($rbQuery->count() == 0){
               $rbObj = new LeanObject("Rebalancing");
-              $rbObj->set("portfolio", $rebalancing->get('portfolio'));
+              $rbObj->set("portfolio", $portfolio);
               $rbObj->set("origin_id", $rebalance->id);
               $rbObj->set("status", $rebalance->status);
               $rbObj->set("cube_id", $rebalance->cube_id);
