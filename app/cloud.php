@@ -46,6 +46,7 @@ Cloud::define("sieveOfPrimes", function($params, $user) {
     return $numbers;
 });
 
+/*定时更新所有组合信息*/
 Cloud::define("updatePortfolio", function($params, $user) {
     $query = new Query("Portfolios");
     $portfolios = $query->equalTo('status', true)->find();
@@ -60,8 +61,10 @@ Cloud::define("updatePortfolio", function($params, $user) {
     }
 });
 
-Cloud::afterSave("Rebalancing", function($rebalancing, $currentUser) {
-    $prev_bebalancing_id = $rebalancing->get('prev_bebalancing_id');
+Cloud::define("updateRebalance", function($params, $user) {
+    //$prev_bebalancing_id = $rebalancing->get('prev_bebalancing_id');
+    $query = new Query("Portfolios");
+    $portfolios = $query->equalTo('status', true)->find();
     try {
         if(!empty($prev_bebalancing_id)){
           $rebalance = getRebalancing($prev_bebalancing_id);
@@ -98,6 +101,53 @@ Cloud::afterSave("Rebalancing", function($rebalancing, $currentUser) {
     }
 });
 
+Cloud::afterSave("Portfolios", function($portfolio, $currentUser) {
+    $last_rb_id = $portfolio->get('last_rb_id');
+    try {
+      if($last_rb_id && $rbQuery){
+        $rebalance = getRebalancing($older_rb_id);
+        if(!empty($rebalance)){
+          $rbObj = new LeanObject("Rebalancing");
+          $rbObj->set("portfolio", $portfolio);
+          $rbObj->set("origin_id", $rebalance->id);
+          $rbObj->set("status", $rebalance->status);
+          $rbObj->set("cube_id", $rebalance->cube_id);
+          $rbObj->set("prev_bebalancing_id", $rebalance->prev_bebalancing_id);
+          $rbObj->set("category", $rebalance->category);
+          $rbObj->set("created_at", $rebalance->created_at);
+          $rbObj->set("updated_at", $rebalance->updated_at);
+          $rbObj->set("cash_value", $rebalance->cash_value);
+          $rbObj->set("cash", $rebalance->cash);
+          $rbObj->set("error_code", $rebalance->error_code == null ? 'null': $rebalance->error_code);
+          $rbObj->set("error_message", $rebalance->error_message);
+          $rbObj->set("error_status", $rebalance->error_status == null ? 'null':$rebalance->error_status);
+          $rbObj->set("holdings", $rebalance->holdings == null ? 'null':$rebalance->holdings);
+          $rbObj->set("rebalancing_histories", json_encode($rebalance->rebalancing_histories));
+          $rbObj->set("comment", $rebalance->comment);
+          $rbObj->set("diff", $rebalance->diff);
+          $rbObj->set("new_buy_count", $rebalance->new_buy_count);
+          $rbObj->save();
+        }
+      }
+    } catch (CloudException $ex) {
+        throw new FunctionError("保存 Post 对象失败: " . $ex->getMessage());
+    }
+});
+
+Cloud::afterDelete("Portfolios", function($portfolio, $currentUser) {
+    $query = new Query("Rebalancing");
+    $query->equalTo("portfolio", $portfolio);
+    try {
+        // 删除相关的 photos
+        $allBalance = $query->find();
+        LeanObject::destroyAll($allBalance);
+    } catch (CloudException $ex) {
+        throw new FunctionError("删除关联 调仓记录 失败: {$ex->getMessage()}");
+    }
+});
+
+
+
 /*
 Cloud::beforeSave("Portfolios", function($portfolio, $currentUser) {
     $query = new Query("Portfolios");
@@ -112,14 +162,7 @@ Cloud::beforeSave("Portfolios", function($portfolio, $currentUser) {
 });
 */
 /*
-Cloud::afterSave("Portfolios", function($portfolio, $currentUser) {
-    $portfolio->set('name', 'test123');
-    try {
-        $portfolio->save();
-    } catch (CloudException $ex) {
-        throw new FunctionError("保存 Post 对象失败: " . $ex->getMessage());
-    }
-});
+
 */
 /*
 

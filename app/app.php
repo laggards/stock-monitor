@@ -94,14 +94,15 @@ $app->post("/portfolios", function(Request $request, Response $response) {
     try {
         $data = $request->getParsedBody();
         $portfolioProperty = getLastBebalancingID($data["symbol"]);
-        $portfolio = new LeanObject("Portfolios");
-        $portfolio->set("symbol", $data["symbol"]);
-        $portfolio->set('name', $portfolioProperty['name']);
-        $portfolio->set("last_rb_id", $portfolioProperty['last_rb_id']);
-        $portfolio->set("period", $portfolioProperty['period']);
-        $portfolio->set("status", true);
-        $portfolio->save();
-
+        if($portfolioProperty && !empty($data["name"])){
+          $portfolio = new LeanObject("Portfolios");
+          $portfolio->set("symbol", $data["symbol"]);
+          $portfolio->set('name', $portfolioProperty['name']);
+          $portfolio->set("last_rb_id", $portfolioProperty['last_rb_id']);
+          $portfolio->set("period", $portfolioProperty['period']);
+          $portfolio->set("status", true);
+          $portfolio->save();
+        }
         return $response->withStatus(302)->withHeader("Location", "/portfolios");
     } catch (\Exception $ex) {
         return $response->withStatus(302)->withHeader("Location", "/portfolios");
