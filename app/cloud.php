@@ -52,7 +52,19 @@ Cloud::define("updatePortfolio", function($params, $user) {
     $portfolios = $query->equalTo('status', true)->find();
     foreach ($portfolios as $portfolio) {
       $portfolioProperty = getLastBebalancingID($portfolio->get('symbol'));
-      if($portfolioProperty['last_rb_id'] != $portfolio->get('last_rb_id') || $portfolioProperty['period'] != $portfolio->get('period')){
+      if($portfolioProperty['last_rb_id'] != $portfolio->get('last_rb_id')){
+        $client = new GuzzleHttp\Client();
+        $msg = "您所订阅组合[".$portfolioProperty['name']."]仓位有变化，请注意查看！";
+        $resp = $client->post("https://PAULNEyX.push.lncld.net/1.1/push", array(
+          'headers' => [
+            'X-LC-Id' => 'PAULNEyX9yOQ2Nl1yvOIugpf-gzGzoHsz',
+            'X-LC-Key' => 'LGAi6DMraDAgcImY1VsQDa90,master',
+            'Content-Type' => 'application/json'
+          ],
+          "json" => array(
+              "data"  => array("title" => "有新的调仓","alert" => $msg)
+          )
+        ));
         $portfolio->set('name', $portfolioProperty['name']);
         $portfolio->set('period', $portfolioProperty['period']);
         $portfolio->set('last_rb_id', $portfolioProperty['last_rb_id']);

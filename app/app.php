@@ -137,12 +137,6 @@ $app->get('/portfolio/{objectId}/update', function(Request $request, Response $r
     try {
         $rbQuery = new Query("Rebalancing");
         //$lastRb = $rbQuery->equalTo('origin_id', (int)$portfolio->get('last_rb_id'))->first();
-
-
-        exit();
-
-
-
         $rbQuery->ascend("updated_at");
         $olderRb = $rbQuery->equalTo('portfolio', $portfolio)->first();
         $older_rb_id = $olderRb->get('prev_bebalancing_id');
