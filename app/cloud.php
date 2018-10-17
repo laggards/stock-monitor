@@ -75,8 +75,8 @@ Cloud::define("updateRebalance", function($params, $user) {
           $rebalance = getRebalancing($prev_bebalancing_id);
           if(!empty($rebalance)){
 
-            $uniqueRbObj->equalTo("origin_id", $rebalance->id);
-            if($uniqueRbObj->count() == 0){
+            $rbQuery->equalTo("origin_id", $rebalance->id);
+            if($rbQuery->count() == 0){
               $rbObj = new LeanObject("Rebalancing");
               $rbObj->set("portfolio", $rebalancing->get('portfolio'));
               $rbObj->set("origin_id", $rebalance->id);
@@ -100,7 +100,7 @@ Cloud::define("updateRebalance", function($params, $user) {
             }
           }
         }
-      }  
+      }
     } catch (CloudException $ex) {
         error_log('prev_bebalancing_id->'.$prev_bebalancing_id);
         throw new FunctionError("保存 Post 对象失败: " . $ex->getMessage());
