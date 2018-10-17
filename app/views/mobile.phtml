@@ -7,7 +7,7 @@
   <meta name="keywords" content="">
   <meta name="viewport"
         content="width=device-width, initial-scale=1">
-  <title>Amaze UI Examples</title>
+  <title>组合列表</title>
 
   <!-- Set render engine for 360 browser -->
   <meta name="renderer" content="webkit">
@@ -55,5 +55,24 @@
 <script src="assets/js/amazeui.ie8polyfill.min.js"></script>
 <![endif]-->
 <script src="//cdnjs.cloudflare.com/ajax/libs/amazeui/2.7.2/js/amazeui.min.js"></script>
+
+<script>
+$("#mescroll").data("downCount", 0);
+var mescroll = new MeScroll("mescroll", {
+        down: {
+					callback: downCallback
+				}
+			});
+function downCallback() {
+  var downCount = $("#mescroll").data("downCount");
+  $("#mescroll").data("downCount", downCount + 1)
+  if(downCount > 0){
+    mescroll.endSuccess();
+    location.reload();
+  }
+  mescroll.endSuccess();
+  //
+}
+</script>
 </body>
 </html>
