@@ -97,7 +97,7 @@ $app->post("/portfolios", function(Request $request, Response $response) {
         $portfolioProperty = getLastBebalancingID($data["symbol"]);
         if(!empty($portfolioProperty['name'])){
           $query->equalTo("symbol", $data["symbol"]);
-          if($uniqueRbObj->count() == 0){
+          if($query->count() == 0){
             $portfolio = new LeanObject("Portfolios");
             $portfolio->set("symbol", $data["symbol"]);
             $portfolio->set('name', $portfolioProperty['name']);
