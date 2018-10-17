@@ -108,47 +108,54 @@ Cloud::define("updateRebalance", function($params, $user) {
 });
 
 /*修复调仓断点*/
-Cloud::define("updateRebalance", function($params, $user) {
+Cloud::define("updateBreakRebalance", function($params, $user) {
     //$prev_bebalancing_id = $rebalancing->get('prev_bebalancing_id');
     $pQuery = new Query("Portfolios");
     $rbQuery = new Query("Rebalancing");
     try {
       $portfolios = $pQuery->equalTo('status', true)->find();
       foreach ($portfolios as $portfolio) {
-        $allBalance = $rbQuery->equalTo('portfolio', $portfolio)->select("origin_id", "prev_bebalancing_id")->find();
+        $allBalance = $rbQuery->descend("created_at")->equalTo('portfolio', $portfolio)->select("origin_id", "prev_bebalancing_id")->find();
+        $allBalanceArr = object_to_array($allBalance);
+        $originIdArr = [];
+        $PrevIdArr = [];
         foreach ($allBalance as $balance) {
-          // code...
+          if(!empty($balance->get('origin_id'))){
+            array_push($originIdArr, $balance->get('origin_id'));
+          }
+          if(!empty($balance->get('prev_bebalancing_id'))){
+            array_push($PrevIdArr, $balance->get('prev_bebalancing_id'));
+          }
         }
-
-        $rbQuery->ascend("updated_at");
-        $olderRb = $rbQuery->equalTo('portfolio', $portfolio)->first();
-        $prev_bebalancing_id = $olderRb->get('prev_bebalancing_id');
-        if(!empty($prev_bebalancing_id)){
-          $rebalance = getRebalancing($prev_bebalancing_id);
-          if(!empty($rebalance)){
-
-            $rbQuery->equalTo("origin_id", $rebalance->id);
-            if($rbQuery->count() == 0){
-              $rbObj = new LeanObject("Rebalancing");
-              $rbObj->set("portfolio", $portfolio);
-              $rbObj->set("origin_id", $rebalance->id);
-              $rbObj->set("status", $rebalance->status);
-              $rbObj->set("cube_id", $rebalance->cube_id);
-              $rbObj->set("prev_bebalancing_id", $rebalance->prev_bebalancing_id);
-              $rbObj->set("category", $rebalance->category);
-              $rbObj->set("created_at", $rebalance->created_at);
-              $rbObj->set("updated_at", $rebalance->updated_at);
-              $rbObj->set("cash_value", $rebalance->cash_value);
-              $rbObj->set("cash", $rebalance->cash);
-              $rbObj->set("error_code", $rebalance->error_code == null ? 'null': $rebalance->error_code);
-              $rbObj->set("error_message", $rebalance->error_message);
-              $rbObj->set("error_status", $rebalance->error_status == null ? 'null':$rebalance->error_status);
-              $rbObj->set("holdings", $rebalance->holdings == null ? 'null':$rebalance->holdings);
-              $rbObj->set("rebalancing_histories", json_encode($rebalance->rebalancing_histories));
-              $rbObj->set("comment", $rebalance->comment);
-              $rbObj->set("diff", $rebalance->diff);
-              $rbObj->set("new_buy_count", $rebalance->new_buy_count);
-              $rbObj->save();
+        foreach($PrevIdArr as $v){
+          if(!in_array($v, $originIdArr)){
+            if(!empty($v)){
+              $rebalance = getRebalancing($v);
+              if(!empty($rebalance)){
+                $rbQuery->equalTo("origin_id", $rebalance->id);
+                if($rbQuery->count() == 0){
+                  $rbObj = new LeanObject("Rebalancing");
+                  $rbObj->set("portfolio", $portfolio);
+                  $rbObj->set("origin_id", $rebalance->id);
+                  $rbObj->set("status", $rebalance->status);
+                  $rbObj->set("cube_id", $rebalance->cube_id);
+                  $rbObj->set("prev_bebalancing_id", $rebalance->prev_bebalancing_id);
+                  $rbObj->set("category", $rebalance->category);
+                  $rbObj->set("created_at", $rebalance->created_at);
+                  $rbObj->set("updated_at", $rebalance->updated_at);
+                  $rbObj->set("cash_value", $rebalance->cash_value);
+                  $rbObj->set("cash", $rebalance->cash);
+                  $rbObj->set("error_code", $rebalance->error_code == null ? 'null': $rebalance->error_code);
+                  $rbObj->set("error_message", $rebalance->error_message);
+                  $rbObj->set("error_status", $rebalance->error_status == null ? 'null':$rebalance->error_status);
+                  $rbObj->set("holdings", $rebalance->holdings == null ? 'null':$rebalance->holdings);
+                  $rbObj->set("rebalancing_histories", json_encode($rebalance->rebalancing_histories));
+                  $rbObj->set("comment", $rebalance->comment);
+                  $rbObj->set("diff", $rebalance->diff);
+                  $rbObj->set("new_buy_count", $rebalance->new_buy_count);
+                  $rbObj->save();
+                }
+              }
             }
           }
         }
