@@ -122,13 +122,12 @@ Cloud::define("updateRebalance", function($params, $user) {
 /*修复调仓断点*/
 Cloud::define("updateBreakRebalance", function($params, $user) {
     //$prev_bebalancing_id = $rebalancing->get('prev_bebalancing_id');
-    $pQuery = new Query("Portfolios");
-    $rbQuery = new Query("Rebalancing");
     try {
+      $pQuery = new Query("Portfolios");
       $portfolios = $pQuery->equalTo('status', true)->find();
       foreach ($portfolios as $portfolio) {
+        $rbQuery = new Query("Rebalancing");
         $allBalance = $rbQuery->descend("created_at")->equalTo('portfolio', $portfolio)->select("origin_id", "prev_bebalancing_id")->find();
-        $allBalanceArr = object_to_array($allBalance);
         $originIdArr = [];
         $PrevIdArr = [];
         foreach ($allBalance as $balance) {
