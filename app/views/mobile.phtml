@@ -26,17 +26,30 @@
           <table class="am-table">
             <thead>
               <tr>
-                <th>名称</th>
-                <th>更新时间</th>
+                <th>组合名称</th>
+                <th>最近调仓</th>
+                <th>调仓证券</th>
               </tr>
             </thead>
             <tbody>
               <?php foreach($portfolios as $portfolio): ?>
+                <?php $rebalancing_histories = json_decode($portfolio->lastBalance->get('rebalancing_histories')); $rowNum = count($rebalancing_histories); ?>
                 <tr>
-                  <td><a href="/portfolio/<?= $portfolio->get('objectId') ?>"><?= $portfolio->get('name') ?></a></td>
+                  <td rowspan="<?= $rowNum ?>" class="stock_name"><a href="#"><?= $portfolio->get('name') ?></a></td>
 
-                  <td><?= $portfolio->get('updatedAt')->format("Y-m-d H:i:s") ?></td>
+                  <td rowspan="<?= $rowNum ?>"><?= $portfolio->updatedAtDiff ?></td>
+
+                  <td><?= $rebalancing_histories[0]->stock_name ?></td>
+                  <?php unset($rebalancing_histories[0]) ?>
                 </tr>
+                <?php if($rowNum > 1): ?>
+                  <?php foreach ($rebalancing_histories as $rebalance): ?>
+                    <tr>
+                    <td><?= $rebalance->stock_name ?></td>
+                    <tr>
+                  <?php endforeach?>
+                <?php endif ?>
+
               <?php endforeach ?>
             </tbody>
           </table>

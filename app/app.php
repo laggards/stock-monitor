@@ -17,6 +17,7 @@ use \LeanCloud\Storage\CookieStorage;
 use \LeanCloud\Engine\SlimEngine;
 use \LeanCloud\Query;
 use \LeanCloud\LeanObject;
+use \Carbon\Carbon;
 
 $app = new \Slim\App();
 // 禁用 Slim 默认的 handler，使得错误栈被日志捕捉
@@ -228,15 +229,23 @@ $app->get('/hello/{name}', function (Request $request, Response $response) {
 // 显示 todo 列表
 $app->get('/mobile', function(Request $request, Response $response) {
   $query = new Query("Portfolios");
-  $query->descend("createdAt");
+  $query->descend("updatedAt");
   try {
       $portfolios = $query->equalTo('status',true)->find();
+      $balanceQuery = new Query("Rebalancing");
+      foreach ($portfolios as $portfolio) {
+        $dt = new Carbon($portfolio->get('updatedAt')->format('Y-m-d H:i:s'));
+        $portfolio->updatedAtDiff = $dt->locale('zh_CN')->diffForHumans();
+        $portfolio->lastBalance = $balanceQuery->equalTo('portfolio', $portfolio)->first();
+
+      }
   } catch (\Exception $ex) {
       error_log("Query Portfolios failed!");
       $todos = array();
   }
+
   return $this->view->render($response, "mobile.phtml", array(
-      "title" => "组合列表",
+      "title" => "监控组合列表",
       "portfolios" => $portfolios,
   ));
 });
