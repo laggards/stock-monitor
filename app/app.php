@@ -240,11 +240,11 @@ $app->get('/mobile', function(Request $request, Response $response) {
       $portfolios = $query->equalTo('status',true)->find();
       $balanceQuery = new Query("Rebalancing");
       foreach ($portfolios as $portfolio) {
-
         $portfolio->lastBalance = $balanceQuery->equalTo('portfolio', $portfolio)->first();
-
         $dt = new Carbon(unixtime_to_date($portfolio->lastBalance->get('created_at')));
+
         $portfolio->updatedAtDiff = $dt->locale('zh_CN')->diffForHumans();
+
       }
   } catch (\Exception $ex) {
       error_log("Query Portfolios failed!");
