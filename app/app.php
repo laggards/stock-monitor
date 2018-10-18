@@ -92,6 +92,7 @@ $app->get('/portfolios', function(Request $request, Response $response) {
 
 $app->post("/portfolios", function(Request $request, Response $response) {
     $query = new Query("Portfolios");
+    $query->descend("created_at");
     try {
         $data = $request->getParsedBody();
         $portfolioProperty = getLastBebalancingID($data["symbol"]);
@@ -239,10 +240,11 @@ $app->get('/mobile', function(Request $request, Response $response) {
       $portfolios = $query->equalTo('status',true)->find();
       $balanceQuery = new Query("Rebalancing");
       foreach ($portfolios as $portfolio) {
-        $dt = new Carbon($portfolio->get('updatedAt')->format('Y-m-d H:i:s'));
-        $portfolio->updatedAtDiff = $dt->locale('zh_CN')->diffForHumans();
+
         $portfolio->lastBalance = $balanceQuery->equalTo('portfolio', $portfolio)->first();
 
+        $dt = new Carbon(unixtime_to_date($portfolio->lastBalance->get('created_at')));
+        $portfolio->updatedAtDiff = $dt->locale('zh_CN')->diffForHumans();
       }
   } catch (\Exception $ex) {
       error_log("Query Portfolios failed!");

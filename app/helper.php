@@ -51,3 +51,10 @@ function getRebalancing($last_rb_id){
     ]);
     return json_decode($res->getBody())->rebalancing;
 }
+
+function unixtime_to_date($unixtime, $timezone = 'PRC') {
+    $unixtime = (int)($unixtime / 1000);
+    $datetime = new DateTime("@$unixtime"); //DateTime类的bug，加入@可以将Unix时间戳作为参数传入
+    $datetime->setTimezone(new DateTimeZone($timezone));
+    return $datetime->format("Y-m-d H:i:s");
+}

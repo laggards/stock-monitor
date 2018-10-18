@@ -54,7 +54,7 @@
                   <?php foreach($allBalance as $balance): ?>
                     <?php $rebalancing_histories = json_decode($balance->get('rebalancing_histories')); $rowNum = count($rebalancing_histories); ?>
                     <tr class="<?= $balance->get('error_code') == 'null'? '':'table-danger' ?><?= $balance->get('prev_bebalancing_id') != 0? '':' table-info' ?>">
-                      <td rowspan="<?= $rowNum ?>"><?= date("Y-m-d H:i:s", $rebalancing_histories[0]->created_at/1000) ?></td>
+                      <td rowspan="<?= $rowNum ?>"><?= date("Y-m-d H:i:s", $rebalancing_histories[0]->updated_at/1000) ?></td>
                       <td rowspan="<?= $rowNum ?>"><?= $balance->get('category') == 'user_rebalancing'? '用户调仓':'系统调仓' ?></td>
                       <?php if($balance->get('error_code') == 'null'): ?>
                         <td rowspan="<?= $rowNum ?>">成功</td>
