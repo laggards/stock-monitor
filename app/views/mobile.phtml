@@ -44,7 +44,7 @@
                 </tr>
                 <?php if($rowNum > 1): ?>
                   <?php foreach ($rebalancing_histories as $rebalance): ?>
-                    <?php if(!emtpy($rebalance->stock_name)): ?>
+                    <?php if(!empty($rebalance->stock_name)): ?>
                     <tr>
                     <td><?= $rebalance->stock_name ?></td>
                     <tr>
