@@ -52,6 +52,7 @@ Cloud::define("updatePortfolio", function($params, $user) {
     $portfolios = $query->equalTo('status', true)->find();
     foreach ($portfolios as $portfolio) {
       $portfolioProperty = getLastBebalancingID($portfolio->get('symbol'));
+      error_log("定时器 updatePortfolio 更新【".$portfolio->get('name').'】组合');
       if($portfolioProperty['last_rb_id'] != $portfolio->get('last_rb_id')){
         $client = new GuzzleHttp\Client();
         $msg = "您所订阅组合[".$portfolioProperty['name']."]仓位有变化，请注意查看！";
