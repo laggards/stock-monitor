@@ -55,7 +55,7 @@ $app->get('/', function (Request $request, Response $response) {
         $portfolios = $query->equalTo('status', true)->find();
         $query = new Query("Rebalancing");
         foreach ($portfolios as $portfolio) {
-          $lastRb = $query->equalTo('portfolio', $portfolio);
+          $lastRb = $query->descend("created_at")->equalTo('portfolio', $portfolio);
           if($lastRb->count() > 0){
             $portfolio->rebalancing = $lastRb->first();
           }else{
