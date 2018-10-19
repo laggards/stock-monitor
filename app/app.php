@@ -121,9 +121,9 @@ $app->get('/portfolio/{objectId}', function(Request $request, Response $response
     //$query->descend("createdAt");
     try {
         $portfolio = $query->get($args['objectId']);
-
         $allBalanceQuery = new Query("Rebalancing");
-        $allBalance = $allBalanceQuery->equalTo('portfolio', $portfolio)->find();
+        $allBalance = $allBalanceQuery->descend("created_at")->equalTo('portfolio', $portfolio)->find();
+
     } catch (\Exception $ex) {
         error_log("Query portfolio failed!");
         $portfolio = array();
@@ -240,10 +240,9 @@ $app->get('/mobile', function(Request $request, Response $response) {
       $portfolios = $query->equalTo('status',true)->find();
       $balanceQuery = new Query("Rebalancing");
       foreach ($portfolios as $portfolio) {
-        $portfolio->lastBalance = $balanceQuery->equalTo('portfolio', $portfolio)->first();
+        $portfolio->lastBalance = $balanceQuery->descend("created_at")->equalTo('portfolio', $portfolio)->first();
         $dt = new Carbon(unixtime_to_date($portfolio->lastBalance->get('created_at')));
         $portfolio->updatedAtDiff = $dt->locale('zh_CN')->diffForHumans();
-        
       }
   } catch (\Exception $ex) {
       error_log("Query Portfolios failed!");
