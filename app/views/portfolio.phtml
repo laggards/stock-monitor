@@ -63,7 +63,7 @@
                       <?php endif ?>
                       <td><?= $rebalancing_histories[0]->stock_name ?></td>
                       <td><?= $rebalancing_histories[0]->stock_symbol ?></td>
-                      <td><?= $rebalancing_histories[0]->weight == 0 ? '0.00%': number_format($rebalancing_histories[0]->weight, 2).'%' ?></td>
+                      <td><?= $rebalancing_histories[0]->prev_weight_adjusted == 0 ? '0.00%': number_format($rebalancing_histories[0]->prev_weight_adjusted, 2).'%' ?></td>
                       <td><?= $rebalancing_histories[0]->target_weight == 0 ? '0.00%': number_format($rebalancing_histories[0]->target_weight, 2).'%' ?></td>
                       <td>¥<?= $rebalancing_histories[0]->price ?></td>
                       <?php unset($rebalancing_histories[0]) ?>
@@ -73,7 +73,7 @@
                     <tr class="<?= $balance->get('error_code') == 'null'? '':'table-danger' ?><?= $balance->get('prev_bebalancing_id') != 0? '':' table-info' ?>">
                       <td><?= $value->stock_name ?></td>
                       <td><?= $value->stock_symbol ?></td>
-                      <td><?= $value->weight == 0 ? '0.00%': number_format($value->weight, 2).'%' ?></td>
+                      <td><?= $value->prev_weight_adjusted == 0 ? '0.00%': number_format($value->prev_weight_adjusted, 2).'%' ?></td>
                       <td><?= $value->target_weight == 0 ? '0.00%': number_format($value->target_weight, 2).'%' ?></td>
                       <td>¥<?= $value->price ?></td>
                     </tr>
