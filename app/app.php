@@ -255,4 +255,20 @@ $app->get('/mobile', function(Request $request, Response $response) {
   ));
 });
 
+$app->get('/mobile/p/{objectId}', function(Request $request, Response $response, $args) {
+    $query = new Query("Portfolios");
+
+    //$query->descend("createdAt");
+    try {
+        $portfolio = $query->get($args['objectId']);
+        $allBalanceQuery = new Query("Rebalancing");
+        $allBalance = $allBalanceQuery->descend("created_at")->equalTo('portfolio', $portfolio)->limit(30)->find();
+
+    } catch (\Exception $ex) {
+        error_log("Query portfolio failed!");
+        $portfolio = array();
+    }
+    return $this->view->render($response, "p.phtml", array("portfolio" => $portfolio, 'allBalance' => $allBalance));
+});
+
 $app->run();

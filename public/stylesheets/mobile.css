@@ -11,3 +11,40 @@
 		white-space: nowrap;
 		text-align: left;
 }
+.container-fluid {
+	padding: 0px;
+}
+.portfolio {
+	width: 100%;
+	display: block;
+}
+.rb_time {
+	color: #aaaaaa;
+	background-color: #DDD;
+	font-size: 13px;
+	padding: 2px;
+	padding-left: 10px;
+}
+.rb_desc {
+	background-color: #FFF;
+	width: 100%;
+	height: auto;
+	min-height: 58px;
+	padding-top: 8px;
+	padding-bottom: 15px;
+}
+.stock_info {
+	width: auto;
+	float: left;
+	margin-left: 10px;
+}
+.rb_info {
+	width: auto;
+	float: right;
+	text-align: right;
+	margin-right: 10px;
+}
+.stock_symbol, .rb_price {
+	font-size: 13px;
+	color: #aaaaaa;
+}

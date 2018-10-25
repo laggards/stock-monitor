@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Stock Monitor</title>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/amazeui/2.7.2/css/amazeui.min.css">
+    <link rel="stylesheet" href="/stylesheets/mescroll.min.css">
+  	<script src="/javascript/mescroll.min.js" charset="utf-8"></script>
+    <!-- Custom styles for this template -->
+    <link href="/stylesheets/mobile.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div id="mescroll" class="mescroll">
+
+          <div class="row">
+            <div class="col">
+              <?php foreach($allBalance as $balance): ?>
+                <?php $rebalancing_histories = json_decode($balance->get('rebalancing_histories')); $rowNum = count($rebalancing_histories); ?>
+                  <?php foreach ($rebalancing_histories as $value): ?>
+                    <div class="portfolio">
+                      <div class="rb_time"><?= date("Y年m月d日 H:i:s", $rebalancing_histories[0]->updated_at/1000) ?></div>
+                      <div class="rb_desc">
+                        <div class="stock_info pull-left">
+                          <div class="stock_name"><?= $value->stock_name ?></div>
+                          <div class="stock_symbol"><?= $value->stock_symbol ?></div>
+                        </div>
+                        <div class="rb_info pull-right">
+                          <div class="rb_weight"><?= $value->prev_weight_adjusted == 0 ? '0.00%': number_format($value->prev_weight_adjusted, 2).'%' ?> -> <?= $value->target_weight == 0 ? '0.00%': number_format($value->target_weight, 2).'%' ?></div>
+                          <div class="rb_price">参考成交价 ¥<?= $value->price ?></div>
+                        </div>
+                      </div>
+                    </div>
+                  <?php endforeach ?>
+              <?php endforeach ?>
+
+            </div>
+      </div>
+    </div>
+    <!--[if (gte IE 9)|!(IE)]><!-->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!--<![endif]-->
+    <!--[if lte IE 8 ]>
+    <script src="http://libs.baidu.com/jquery/1.11.3/jquery.min.js"></script>
+    <script src="http://cdn.staticfile.org/modernizr/2.8.3/modernizr.js"></script>
+    <script src="assets/js/amazeui.ie8polyfill.min.js"></script>
+    <![endif]-->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/amazeui/2.7.2/js/amazeui.min.js"></script>
+
+    <script>
+    $("#mescroll").data("downCount", 0);
+    var mescroll = new MeScroll("mescroll", {
+
+            down: {
+              auto: false,
+              htmlContent: '<p class="downwarp-tip">组合刷新中...</p>',
+    					callback: downCallback
+    				}
+    			});
+    function downCallback() {
+      location.reload();
+      //
+    }
+    </script>
+  </body>
+</html>

@@ -35,7 +35,7 @@
               <?php foreach($portfolios as $portfolio): ?>
                 <?php $rebalancing_histories = json_decode($portfolio->lastBalance->get('rebalancing_histories')); $rowNum = count($rebalancing_histories); ?>
                 <tr>
-                  <td class="stock_name"><a href="#"><?= $portfolio->get('name') ?></a></td>
+                  <td class="stock_name"><a href="/mobile/p/<?= $portfolio->get('objectId') ?>"><?= $portfolio->get('name') ?></a></td>
 
                   <td><?= $portfolio->updatedAtDiff ?></td>
 
