@@ -18,13 +18,17 @@
 	width: 100%;
 	display: block;
 }
-.rb_time {
+.rb_datetime_box {
 	color: #aaaaaa;
 	background-color: #DDD;
 	font-size: 13px;
-	line-height: 20px;
+	width: 100%;
 	padding: 5px;
-	padding-left: 10px;
+}
+.rb_datetime {
+	display: table-cell;
+  vertical-align: middle;
+	padding-left: 6px;
 }
 .rb_desc {
 	background-color: #FFF;

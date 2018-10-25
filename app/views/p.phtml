@@ -22,7 +22,7 @@
                 <?php $rebalancing_histories = json_decode($balance->get('rebalancing_histories')); $rowNum = count($rebalancing_histories); ?>
                   <?php foreach ($rebalancing_histories as $value): ?>
                     <div class="portfolio">
-                      <div class="rb_time"><?= date("Y年m月d日 H:i:s", $rebalancing_histories[0]->updated_at/1000) ?></div>
+                      <div class="rb_datetime_box"><div class="rb_datetime"><?= date("Y年m月d日 H:i:s", $rebalancing_histories[0]->updated_at/1000) ?></div></div>
                       <div class="rb_desc">
                         <div class="stock_info pull-left">
                           <div class="stock_name"><?= $value->stock_name ?></div>
