@@ -141,13 +141,17 @@ $app->get('/portfolio/{objectId}/export', function(Request $request, Response $r
     $allBalanceQuery = new Query("Rebalancing");
     $allBalance = $allBalanceQuery->descend("created_at")->equalTo('portfolio', $portfolio)->greaterThan('updated_at',$dt->getTimestamp()*1000)->limit(1000)->find();
     $stream = fopen('php://memory', 'w+');
-    $firstRow = ['时间','类别','状态','证券名称','证券代码','前持仓','后持仓','成交价'];
+    $firstRow = ['时间','类别','状态','证券名称','证券代码','前持仓(Prev Weight Adjusted)','后持仓(Target Weight)','成交价(Price)','Volume','Net Value','Weight','Target Weight','Prev Weight','Prev Target Weight','Prev Weight Adjusted','Prev Volume','Prev Price','Prev Net Value','Proactive','Cash','Cash_value','Diff','New Buy Count'];
     fputcsv($stream, $firstRow, ';');
     foreach ($allBalance as $balance) {
         $histories = json_decode($balance->get('rebalancing_histories'));
         $update_at = date("Y-m-d H:i:s", $balance->get('updated_at')/1000);
         $cat = $balance->get('category') == 'user_rebalancing'? '用户调仓' : '系统调仓';
         $status = $balance->get('error_code') == 'null' ? '成功': '部份未成交';
+        $cash = $balance->get('cash');
+        $cash_value = $balance->get('cash_value');
+        $diff = $balance->get('diff');
+        $new_buy_count = $balance->get('new_buy_count');
         foreach ($histories as $history) {
           $data = [
             $update_at,
@@ -157,7 +161,22 @@ $app->get('/portfolio/{objectId}/export', function(Request $request, Response $r
             $history->stock_symbol,
             $history->prev_weight_adjusted == 0 ? '0.00%': number_format($history->prev_weight_adjusted, 2).'%',
             $history->target_weight == 0 ? '0.00%': number_format($history->target_weight, 2).'%',
-            $history->price
+            $history->price,
+            $history->volume,
+            $history->net_value,
+            $history->weight,
+            $history->target_weight,
+            $history->prev_weight,
+            $history->prev_target_weight,
+            $history->prev_weight_adjusted,
+            $history->prev_volume,
+            $history->prev_price,
+            $history->prev_net_value,
+            $history->proactive,
+            $cash,
+            $cash_value,
+            $diff,
+            $new_buy_count
           ];
           fputcsv($stream, $data, ';');
         }
