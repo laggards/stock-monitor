@@ -18,6 +18,8 @@ use \LeanCloud\Engine\SlimEngine;
 use \LeanCloud\Query;
 use \LeanCloud\LeanObject;
 use \Carbon\Carbon;
+use \PhpOffice\PhpSpreadsheet\Spreadsheet;
+use \PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 $app = new \Slim\App();
 // 禁用 Slim 默认的 handler，使得错误栈被日志捕捉
@@ -129,6 +131,46 @@ $app->get('/portfolio/{objectId}', function(Request $request, Response $response
         $portfolio = array();
     }
     return $this->view->render($response, "portfolio.phtml", array("portfolio" => $portfolio, 'allBalance' => $allBalance));
+});
+
+$app->get('/portfolio/{objectId}/export', function(Request $request, Response $response, $args) {
+    $query = new Query("Portfolios");
+    $portfolio = $query->get($args['objectId']);
+    $fileName= $portfolio->get('name').'_'.$portfolio->get('symbol').'_'.date('Y-m-d_H:i:s').'.csv';
+    $dt = Carbon::create(date('Y'), 1, 1, 0, 0, 0);
+    $allBalanceQuery = new Query("Rebalancing");
+    $allBalance = $allBalanceQuery->descend("created_at")->equalTo('portfolio', $portfolio)->greaterThan('updated_at',$dt->getTimestamp()*1000)->limit(1000)->find();
+    $stream = fopen('php://memory', 'w+');
+    $firstRow = ['时间','类别','状态','证券名称','证券代码','前持仓','后持仓','成交价'];
+    fputcsv($stream, $firstRow, ';');
+    foreach ($allBalance as $balance) {
+        $histories = json_decode($balance->get('rebalancing_histories'));
+        $update_at = date("Y-m-d H:i:s", $balance->get('updated_at')/1000);
+        $cat = $balance->get('category') == 'user_rebalancing'? '用户调仓' : '系统调仓';
+        $status = $balance->get('error_code') == 'null' ? '成功': '部份未成交';
+        foreach ($histories as $history) {
+          $data = [
+            $update_at,
+            $cat,
+            $status,
+            $history->stock_name,
+            $history->stock_symbol,
+            $history->prev_weight_adjusted == 0 ? '0.00%': number_format($history->prev_weight_adjusted, 2).'%',
+            $history->target_weight == 0 ? '0.00%': number_format($history->target_weight, 2).'%',
+            $history->price
+          ];
+          fputcsv($stream, $data, ';');
+        }
+
+
+    }
+
+    rewind($stream);
+
+    $response = $response->withHeader('Content-Type', 'text/csv');
+    $response = $response->withHeader('Content-Disposition', 'attachment; filename="'.$fileName.'"');
+
+    return $response->withBody(new \Slim\Http\Stream($stream));
 });
 
 $app->get('/portfolio/{objectId}/update', function(Request $request, Response $response, $args) {

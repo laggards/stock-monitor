@@ -5,7 +5,8 @@
         "leancloud/leancloud-sdk": "^0.8.1",
         "slim/php-view": "^2.1",
         "guzzlehttp/guzzle": "^6.3",
-        "nesbot/carbon": "^2.3"
+        "nesbot/carbon": "^2.3",
+        "phpoffice/phpspreadsheet": "^1.5"
     },
     "autoload": {
         "files": ["app/helper.php"]

@@ -24,7 +24,7 @@
             <h1 class="h2"><a href="/">控制台</a>>><a href="/portfolios">组合列表</a>>><a href="#" target="_blank"><?= $portfolio->get('name') ?><?= $portfolio->get('symbol') ?> <span data-feather="external-link"></span></a></h1>
             <div class="btn-toolbar mb-2 mb-md-0">
               <div class="btn-group mr-2">
-                <button class="btn btn-sm btn-outline-secondary">导出</button>
+                <a class="btn btn-sm btn-outline-secondary" href="/portfolio/<?= $portfolio->get('objectId') ?>/export">导出</a>
               </div>
             </div>
           </div>
