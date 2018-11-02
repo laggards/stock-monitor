@@ -80,14 +80,14 @@ Cloud::define("updateRebalance", function($params, $user) {
     try {
       $portfolios = $pQuery->equalTo('status', true)->find();
       foreach ($portfolios as $portfolio) {
+        error_log("定时器 updateRebalance 更新【".$portfolio->get('name').'】组合');
         $rbQuery = new Query("Rebalancing");
-        $rbQuery->ascend("updated_at");
+        $rbQuery->ascend("prev_bebalancing_id");
         $olderRb = $rbQuery->equalTo('portfolio', $portfolio)->first();
         $prev_bebalancing_id = $olderRb->get('prev_bebalancing_id');
         if(!empty($prev_bebalancing_id)){
           $rebalance = getRebalancing($prev_bebalancing_id);
           if(!empty($rebalance)){
-
             $rbQuery->equalTo("origin_id", $rebalance->id);
             if($rbQuery->count() == 0){
               $rbObj = new LeanObject("Rebalancing");
